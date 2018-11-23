@@ -28,17 +28,16 @@ def to_lf (a, b, c, step, alpha): #get number of stars with definite magnitude
     func = interp1d(a, b)
     return func(c) * step * alpha
 
-def to_mf (a, b, c, d): # get mass of a starS with definite magnitude
+def to_mf (a, b, c, d): #get mass of a starS with definite magnitude
     func = interp1d(a, b)
     return func(c)*d
 
-def neyman(data_q): # get q randomly from definite distribution
+def neyman(data_q): #get q randomly from definite distribution
     iter = True
     while iter == True:
-        q = random()
-        Fr = random()
+        q, Fr = random(), random()
         F = interp1d(data_q['q'], data_q['F'])
-        if Fr <= F(q):
+        if Fr <= F(q) and q != 0:
             iter = False
             return q
         else:
@@ -49,8 +48,8 @@ def func(x,q,lf):
                    pow(m.e, np.log(10)*(-0.705*np.log10(q)*np.log10(q) +
                 4.655*np.log10(q) - 1.41*np.log10(x)*np.log10(q))))-np.log(lf)    
         
-in_file_lf = input("Input the Luminosity Function")
-in_file_is = input("Input the isochrone")
+in_file_lf = input("Input the Luminosity Function \n")
+in_file_is = input("Input the isochrone \n")
 in_file_q = "func_flat.txt"
 
 dist_mod, EBV = get_parameters (in_file_lf.split('_')[0])
@@ -77,6 +76,7 @@ main_table['mass_all_ss'] = to_mf(data_is['J, mag'], data_is['M, SM'], main_tabl
 MASS_CLUSTER_OLD = main_table['mass_all_ss'].sum()
 
 for ALPHA in np.arange (0., 1., 0.1):
+    print (ALPHA)
     ratio = []
     for i in range(0, 30):
         MASS_BINARIES = 0
