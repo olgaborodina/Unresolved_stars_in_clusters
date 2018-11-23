@@ -92,8 +92,7 @@ double monte_karlo()
 		char G_char[4], q_char[4];
 		double q, F, G1, G2, G, q1, q2, qmax = 1, Fmax = 1, fi = 10,s;
 		fstream finq;
-		finq.open("func_gr.txt", ios::in);
-		srand(time(NULL));
+		finq.open("func_flat.txt", ios::in);
 		for (int i = 0; i <= 1; i++)
 		{
 			s = rand();
@@ -122,7 +121,7 @@ double monte_karlo()
 					break;
 				}
 			}
-			if (F > G) i = i - 1;
+			if (F > G || q == 0) i = i - 1;
 			else return q;
 		}
 }
@@ -132,21 +131,25 @@ double lummass(double M)
 	//return pow(10, (4.040*(log10(M)) - 0.002));
 }
 int main()
+
 { 
-	int N = 96, K = 58, Nsteps=30;//потом с клавиатуры
-	double mod_dist = 10.2,EBV = 0.15, ALPHA = 0., step;// константы для скопления - потом с клавиатуры
+	int N = 58, K = 93, Nsteps=30;//потом с клавиатуры
+	double mod_dist = 10.484,EBV = 0.34, ALPHA = 0., step;// константы для скопления - потом с клавиатуры
 	char vis_mag_char[10]; 
 	double vis_mag0, vis_mag_fin, fi, abs_mag0, mass;
 	double MASS_DOUBLE_i, MASS_DOUBLE = 0, MASS_SINGLE_i, MASS_SINGLE = 0, MASS_CLUSTER_NEW, MASS_CLUSTER_OLD_i, MASS_CLUSTER_OLD = 0, NEW_divided_by_OLD;
 	double q, musor, mass_s, mass_d1, mass_d2, lf0, lf1, mass_d1_st,fx[2], ratio[31], mistake;
 	fstream fin, fini, fout, fout2;
-	fin.open("density_NGC7142.txt", ios::in);
+	fin.open("density_IC2714.txt", ios::in);
 	fini.open("mass-absmag.txt", ios::in); 
 	fout.open("number_new.txt", ios_base::out);
-	fout2.open("alpha_same_NGC7142.txt", ios_base::out);
+	fout2.open("alpha_flat_IC2714.txt", ios_base::out);
 	fout2.setf(ios::fixed);
 	fout2.setf(ios::fixed);
 	fout2 << "ALPHA" << '\t' << "MASS_CLUSTER_NEW" << '\t' << "MASS_CLUSTER_NEW_low" << '\t' << "MASS_CLUSTER_NEW_up" << '\t' << '\t' << "NEW_divided_by_OLD" << endl;
+	
+	srand(time(NULL));
+
 	for (ALPHA; ALPHA <= 0.9; ALPHA = ALPHA + 0.1)
 	{
 		cout <<endl<< ALPHA << endl;
@@ -180,8 +183,8 @@ int main()
 			lf0 = lummass(mass_s);
 			for (int i=1; i<= fi ; i++)
 			{
-				//q = monte_karlo();
-				q = 1;
+				q = monte_karlo();
+				//q = 1;
 				for (double i = 0.001; i <= 10; i = i + 0.001)
 				{
 					if (log10(lummass(0.001))*log(10) + log(1 + pow(M_E, log(10)*(-0.705*log10(q)*log10(q) + 4.655*log10(q) - 1.41*log10(0.001)*log10(q)))) - log(lf0) > 0) { mass_d1_st = 0.001; break;}
@@ -200,7 +203,7 @@ int main()
 				mass_d1 = mass_d1_st;
 				mass_d2 = q*mass_d1;
 				MASS_DOUBLE = MASS_DOUBLE + mass_d1+mass_d2;
-				}
+			}
 						
 			//для доли одиночных 
 			fi= round(lf(N, 7, fin, vis_mag0, step, 1))- round(lf(N, 7, fin, vis_mag0, step, ALPHA));
